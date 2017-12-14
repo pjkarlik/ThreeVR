@@ -112,20 +112,13 @@ export default class Render {
     );
     object.position.set(
       xOffset + point.x * size,
-      -0.15 + point.z,
+      1.15 + point.z,
       yOffset + point.y * size
     );
     this.quickvr.scene.add(object);
   };
 
   renderLoop = () => {
-    if (this.frames % 1 === 0) {
-      // some function here for throttling
-    }
-
-    this.renderScene();
-    this.cameraLoop();
-    this.frames += 0.5;
 
     window.requestAnimationFrame(this.renderLoop.bind(this));
   };

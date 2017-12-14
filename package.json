@@ -1,7 +1,7 @@
 {
-  "name": "ThreeBoilerplate",
-  "version": "0.1.0",
-  "description": "ThreeBoilerplate",
+  "name": "ThreeVR",
+  "version": "0.0.1",
+  "description": "ThreeVR",
   "main": "index.js",
   "scripts": {
     "webpack": "node node_modules/.bin/webpack --progress --colors",
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/pjkarlik/ThreeExperiments.git"
+    "url": "git://github.com/pjkarlik/ThreeVR.git"
   },
   "author": "pjkarlik@gmail.com",
   "license": "MIT",

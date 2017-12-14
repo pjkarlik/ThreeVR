@@ -18,7 +18,7 @@ const DEV_PORT = 2021;
 const marker = 'debug';
 
 const config = {
-  name: 'ThreeBoilerplate',
+  name: 'ThreeVR',
   target: 'web',
   devServer: {
     disableHostCheck: true,
@@ -141,7 +141,7 @@ const config = {
     }),
     new HtmlWebpackPlugin({
       css: 'styles/styles.css',
-      title: 'ThreeBoilerplate',
+      title: 'ThreeVR Boilerplate',
       favicon: './resources/images/favicon.png',
       template: './resources/templates/template.ejs',
       inject: 'body',

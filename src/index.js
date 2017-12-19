@@ -1,4 +1,4 @@
-import Render from './MazeVR/index';
+import Render from './SphereShader/index';
 import { description, version } from '../version.json';
 
 require('../resources/styles/styles.css');

@@ -10,6 +10,11 @@ import yneg from '../../resources/images/church/negy.jpg';
 import zpos from '../../resources/images/church/posz.jpg';
 import zneg from '../../resources/images/church/negz.jpg';
 
+import stone from '../../resources/images/matallo.jpg';
+import bmp from '../../resources/images/matallo_bmp.jpg';
+import grate from '../../resources/images/grate_t.png';
+import bmpg from '../../resources/images/grate_bmp.jpg';
+
 // Render Class Object //
 export default class Render {
   constructor() {
@@ -49,8 +54,8 @@ export default class Render {
     this.skybox = new THREE.CubeTextureLoader().load(urls);
     this.skybox.format = THREE.RGBFormat;
     // CubeReflectionMapping || CubeRefractionMapping//
-    this.skybox.mapping = THREE.CubeReflectionMapping;
-    // this.scene.background = this.skybox;
+    this.skybox.mapping = THREE.CubeRefractionMapping;
+    // this.quickvr.scene.background = this.skybox;
   };
 
   getRandomVector = (a, b, c) => {
@@ -78,6 +83,39 @@ export default class Render {
       side: THREE.DoubleSide
     });
 
+    const texloader = new THREE.TextureLoader();
+  
+    let texture = texloader.load(stone, () => {
+      texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+    });
+  
+    let bmpMap = texloader.load(bmp, () => {
+      bmpMap.wrapS = bmpMap.wrapT = THREE.RepeatWrapping;
+    });
+
+    this.boxMaterial = new THREE.MeshPhongMaterial({
+      map: texture,
+      side: THREE.DoubleSide,
+      bumpMap: bmpMap,
+      transparent: true,
+      bumpScale: 0.95,
+    });
+
+    texture = texloader.load(grate, () => {
+      texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+    });
+  
+    bmpMap = texloader.load(bmpg, () => {
+      bmpMap.wrapS = bmpMap.wrapT = THREE.RepeatWrapping;
+    });
+
+    this.grateMaterial = new THREE.MeshPhongMaterial({
+      map: texture,
+      bumpMap: bmpMap,
+      transparent: true,
+      bumpScale: 0.95,
+    });
+
     let mve = 0;
     for (let v = 0; v < 1; v += 1) {
 
@@ -102,13 +140,20 @@ export default class Render {
     const xOffset = ~~(0 - this.mazeWidth / 2);
     const yOffset = ~~(0 - this.mazeHeight / 2);
 
+    const geometry = new THREE.BoxBufferGeometry(
+      size,
+      size,
+      size
+      // size * 0.45, 16, 16
+    ); 
+    geometry.rotateX(90 * Math.PI / 180);
+
+    geometry.computeVertexNormals();
+    const chx = Math.floor(Math.random() * 100);
+
     const object = new THREE.Mesh(
-      new THREE.CubeGeometry(
-        size,
-        size,
-        size
-      ),
-      this.metalMaterial,
+      geometry,
+      chx > 65 ? this.metalMaterial : chx < 35 ? this.grateMaterial : this.boxMaterial,
     );
     object.position.set(
       xOffset + point.x * size,
@@ -119,7 +164,6 @@ export default class Render {
   };
 
   renderLoop = () => {
-
     window.requestAnimationFrame(this.renderLoop.bind(this));
   };
 }

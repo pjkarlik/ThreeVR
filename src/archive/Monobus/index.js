@@ -129,7 +129,6 @@ export default class Render {
     this.shaderMaterial.uniforms.needsUpdate = true;
   }
   renderLoop = () => {
-    this.animateShader();
     window.requestAnimationFrame(this.renderLoop.bind(this));
   };
 }

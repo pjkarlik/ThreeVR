@@ -1,13 +1,20 @@
 import QuickVR from 'three-quickvr';
 
 import THREE from '../Three';
-import { Generator } from './SimplexGenerator';
+import { Generator } from '../utils/simplexGenerator';
+
+import xpos from '../../resources/images/space/posx.jpg';
+import xneg from '../../resources/images/space/negx.jpg';
+import ypos from '../../resources/images/space/posy.jpg';
+import yneg from '../../resources/images/space/negy.jpg';
+import zpos from '../../resources/images/space/posz.jpg';
+import zneg from '../../resources/images/space/negz.jpg';
 
 // Render Class Object //
 export default class Render {
   constructor() {
-    this.amount = 10;
-    this.size = 3.0;
+    this.amount = 12;
+    this.size = 3.10;
     this.strength = 4.5;
     this.time = 0;
     this.rtime = 0;
@@ -27,6 +34,14 @@ export default class Render {
   init = () => {
     this.quickvr.render.antialias = true;
     // this.quickvr.scene.fog = new THREE.FogExp2(0x000000, 0.275);
+    this.controller = this.quickvr.renderer.vr.getController(0);
+    console.log(this.controller);
+    const urls = [xpos, xneg, ypos, yneg, zpos, zneg];
+    this.skybox = new THREE.CubeTextureLoader().load(urls);
+    this.skybox.format = THREE.RGBFormat;
+    // CubeReflectionMapping || CubeRefractionMapping//
+    this.skybox.mapping = THREE.CubeReflectionMapping;
+    this.quickvr.scene.background = this.skybox;
 
     // Set Lights //
     let pointLight = new THREE.PointLight(0xDDDDDD);
@@ -88,7 +103,7 @@ export default class Render {
 
         object.rotation.set(py * Math.PI / 180, 0, 0);
         object.position.set(px, py, pz - movePosition);
-        object.material.color.setHSL(py * 0.1, .64, .59 );
+        object.material.color.setHSL(py * 0.05, .75, .49 );
       }
     }
   };

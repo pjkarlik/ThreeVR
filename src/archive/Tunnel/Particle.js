@@ -10,8 +10,8 @@ export default class Particle {
     this.x = config.x;
     this.y = config.y;
     this.z = config.z;
-    const min = config.min || 5;
-    const max = config.max || 10;
+    const min = config.min || 1;
+    const max = config.max || 4;
     this.vx = config.vx || (Math.abs(Math.random() * max) - min);
     this.vy = config.vy || (Math.abs(Math.random() * max) - min);
     this.vz = config.vz || (Math.abs(Math.random() * max) - min);

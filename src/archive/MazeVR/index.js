@@ -1,19 +1,19 @@
 import QuickVR from 'three-quickvr';
 
-import THREE from '../Three';
-import BinaryMaze from '../utils/BinaryMaze';
+import THREE from '../../Three';
+import BinaryMaze from '../../utils/BinaryMaze';
 // Skybox image imports //
-import xpos from '../../resources/images/church/posx.jpg';
-import xneg from '../../resources/images/church/negx.jpg';
-import ypos from '../../resources/images/church/posy.jpg';
-import yneg from '../../resources/images/church/negy.jpg';
-import zpos from '../../resources/images/church/posz.jpg';
-import zneg from '../../resources/images/church/negz.jpg';
+import xpos from '../../../resources/images/sky/posx.jpg';
+import xneg from '../../../resources/images/sky/negx.jpg';
+import ypos from '../../../resources/images/sky/posy.jpg';
+import yneg from '../../../resources/images/sky/negy.jpg';
+import zpos from '../../../resources/images/sky/posz.jpg';
+import zneg from '../../../resources/images/sky/negz.jpg';
 
-import stone from '../../resources/images/matallo.jpg';
-import bmp from '../../resources/images/matallo_bmp.jpg';
-import grate from '../../resources/images/grate_t.png';
-import bmpg from '../../resources/images/grate_bmp.jpg';
+import stone from '../../../resources/images/matallo.jpg';
+import bmp from '../../../resources/images/matallo_bmp.jpg';
+import grate from '../../../resources/images/grate_t.png';
+import bmpg from '../../../resources/images/grate_bmp.jpg';
 
 // Render Class Object //
 export default class Render {
@@ -29,7 +29,7 @@ export default class Render {
     this.height = window.innerHeight;
     this.devicePixelRatio = window.devicePixelRatio;
 
-    this.amount = 2 + Math.abs(Math.random() * 26);
+    this.amount = 3;
     this.adef = 360 / this.amount + 1;
     this.splineObject = [];
 
@@ -55,7 +55,7 @@ export default class Render {
     this.skybox.format = THREE.RGBFormat;
     // CubeReflectionMapping || CubeRefractionMapping//
     this.skybox.mapping = THREE.CubeRefractionMapping;
-    // this.quickvr.scene.background = this.skybox;
+    this.quickvr.scene.background = this.skybox;
   };
 
   getRandomVector = (a, b, c) => {
@@ -66,7 +66,7 @@ export default class Render {
   };
 
   getMazeBlob = () => {
-    const mazeReturn = this.maze.generateMaze(35, 35);
+    const mazeReturn = this.maze.generateMaze(11, 11);
     const mazeWidth = this.maze.cc * this.size;
     const mazeHeight = this.maze.cr * this.size;
     return {
@@ -78,11 +78,6 @@ export default class Render {
 
   createScene = () => {
     // Create custom material for the shader
-    this.metalMaterial = new THREE.MeshBasicMaterial({
-      envMap: this.skybox,
-      side: THREE.DoubleSide
-    });
-
     const texloader = new THREE.TextureLoader();
   
     let texture = texloader.load(stone, () => {
@@ -101,20 +96,20 @@ export default class Render {
       bumpScale: 0.95,
     });
 
-    texture = texloader.load(grate, () => {
-      texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-    });
+    // texture = texloader.load(grate, () => {
+    //   texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+    // });
   
-    bmpMap = texloader.load(bmpg, () => {
-      bmpMap.wrapS = bmpMap.wrapT = THREE.RepeatWrapping;
-    });
+    // bmpMap = texloader.load(bmpg, () => {
+    //   bmpMap.wrapS = bmpMap.wrapT = THREE.RepeatWrapping;
+    // });
 
-    this.grateMaterial = new THREE.MeshPhongMaterial({
-      map: texture,
-      bumpMap: bmpMap,
-      transparent: true,
-      bumpScale: 0.95,
-    });
+    // this.grateMaterial = new THREE.MeshPhongMaterial({
+    //   map: texture,
+    //   bumpMap: bmpMap,
+    //   transparent: true,
+    //   bumpScale: 0.95,
+    // });
 
     let mve = 0;
     for (let v = 0; v < 1; v += 1) {
@@ -149,11 +144,9 @@ export default class Render {
     geometry.rotateX(90 * Math.PI / 180);
 
     geometry.computeVertexNormals();
-    const chx = Math.floor(Math.random() * 100);
-
     const object = new THREE.Mesh(
       geometry,
-      chx > 65 ? this.metalMaterial : chx < 35 ? this.grateMaterial : this.boxMaterial,
+      this.boxMaterial,
     );
     object.position.set(
       xOffset + point.x * size,

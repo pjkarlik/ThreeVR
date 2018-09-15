@@ -8,9 +8,9 @@
 
 # ThreeVR
 
-  Current Three.js and VR experiments using [three-quickvr](https://github.com/halvves/three-quickvr) Boilerplate. Really good with iOS/Cardboard for some fun quick VR testing. Building some small apps and wanted a playground to get my feet wet.
+  Current experiments using [three-quickvr](https://github.com/halvves/three-quickvr) Boilerplate and Three.js. Testing some 3DoF interfaces and examples. Looking to play around with user interactions basically. Really good with iOS/Cardboard for some fun quick VR testing. Building some small apps and wanted a playground to get my feet wet.
 
-  ```index.js``` points to => ```Cartridge/index.js``` where all the Magic should happen..
+  The apps entry point is the index file which points to one of the other JS files containing ```Render``` classes. Example and default is ```index.js``` points to => ```Cartridge/index.js``` where all the Magic should happen..
 
 ## Run the example
   Requires Node v7.0.0 or greater

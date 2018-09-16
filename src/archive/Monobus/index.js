@@ -1,17 +1,10 @@
 import QuickVR from 'three-quickvr';
-import THREE from '../Three';
+import THREE from '../../Three';
 
 // Shader Imports //
-import fragmentShader from '../shaders/fragmentShader_304';
-import vertexShader from '../shaders/vertexShader';
+import fragmentShader from '../../shaders/fragmentShader_304';
+import vertexShader from '../../shaders/vertexShader';
 
-// Skybox image imports //
-import xpos from '../../resources/images/church/posx.jpg';
-import xneg from '../../resources/images/church/negx.jpg';
-import ypos from '../../resources/images/church/posy.jpg';
-import yneg from '../../resources/images/church/negy.jpg';
-import zpos from '../../resources/images/church/posz.jpg';
-import zneg from '../../resources/images/church/negz.jpg';
 
 // Render Class Object //
 export default class Render {
@@ -44,7 +37,6 @@ export default class Render {
   init = () => {
     // Set Render and Scene //
     this.quickvr.render.antialias = true;
-    this.quickvr.scene.fog = new THREE.FogExp2(0x000000, 0.275);
     // Set AmbientLight //
     this.ambient = new THREE.AmbientLight(0xFFFFFF);
     this.ambient.position.set(0, 0, 0);
@@ -89,8 +81,6 @@ export default class Render {
       uniforms,
       vertexShader,
       fragmentShader,
-      // transparent: true,
-      // side: THREE.DoubleSide
     });
   };
 
@@ -123,12 +113,13 @@ export default class Render {
   };
 
   animateShader = () => {
-    const timeNow = (Date.now() - this.start) / 1000;
+    const timeNow = (Date.now() - this.start) / 10000;
     this.shaderMaterial.uniforms.time.value = timeNow;
     this.shaderMaterial.uniforms.dec.value = this.dec;
     this.shaderMaterial.uniforms.needsUpdate = true;
   }
   renderLoop = () => {
+    this.animateShader();
     window.requestAnimationFrame(this.renderLoop.bind(this));
   };
 }

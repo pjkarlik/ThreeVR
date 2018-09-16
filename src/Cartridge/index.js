@@ -53,9 +53,6 @@ export default class Render {
     let ambient = new THREE.AmbientLight(0x9f9f9f);
     ambient.position.set(1, 450, -400);
     this.quickvr.scene.add(ambient);
-
-    this.quickvr.scene.add(this.ambient);
-
   };
 
   randomObjects = () => {
@@ -80,7 +77,7 @@ export default class Render {
     const offset = this.amount * (size / 2) - (size / 2);
     // advance time and tick draw loop for time segment
     this.frame += this.speed; 
-    this.rtime += 0.001;
+    this.rtime += 0.005;
     if (this.frame > size) {
       // the time phase of the noise wave moves
       // once the cubes moved one space
@@ -100,10 +97,16 @@ export default class Render {
         const px = (-offset) + (x * size);
         const py = -(5.0 + (noiseX * this.strength));
         const pz = (-offset) + (y * size);
-
-        object.rotation.set(py * Math.PI / 180, 0, 0);
+        const test = 5 * Math.sin(this.rtime * 225 * Math.PI / 180);
         object.position.set(px, py, pz - movePosition);
         object.material.color.setHSL(py * 0.05, .75, .49 );
+        if(x === 5 && y === 7) {
+          this.quickvr.camera.position.set(px, 1.5 + py, pz);
+          if (this.frame % 5 == 0) {
+            console.log(py);
+            console.log(this.quickvr.camera.position);
+          }
+        }
       }
     }
   };

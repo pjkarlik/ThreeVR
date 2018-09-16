@@ -48,9 +48,9 @@ export default class Render {
     this.quickvr.scene.background = new THREE.Color(this.background);
 
     // Set Light //
-    this.lightA = new THREE.PointLight(0xAA0000, 1, 650);
-    this.lightB = new THREE.PointLight(0xFFAA00, 1, 350);
-    this.lightC = new THREE.PointLight(0x00FF00, 1, 550);
+    this.lightA = new THREE.PointLight(0xAA0000, 1, 450);
+    this.lightB = new THREE.AmbientLight(0xFFAA00, 1, 450);
+    this.lightC = new THREE.PointLight(0x00FF00, 1, 450);
     this.quickvr.scene.add(this.lightA);
     this.quickvr.scene.add(this.lightB);
     this.quickvr.scene.add(this.lightC);
@@ -64,19 +64,7 @@ export default class Render {
     return new THREE.Vector3(x, y, z);
   }
 
-  makeTube = (points) => {
-    const size = 0.3 + Math.random();
-    return new THREE.Mesh(
-      new THREE.TubeGeometry(
-        new THREE.CatmullRomCurve3(this.makeRandomPath(points)),
-        600,
-        size,
-        16,
-        false
-      ),
-      this.tunnelMaterial2,
-    );
-  };
+
   createScene = () => {
     const texloader = new THREE.TextureLoader();
     const texture = texloader.load(metal);
@@ -152,8 +140,8 @@ export default class Render {
     // Get the point at the specific percentage
     const p1 = this.path1.getPointAt(Math.abs((this.stopFrame) % 1));
     const p2 = this.path1.getPointAt(Math.abs((this.stopFrame) % 1));
-    const p3 = this.path1.getPointAt(Math.abs((this.stopFrame + 0.04) % 1));
-    const p4 = this.path1.getPointAt(Math.abs((this.stopFrame - 0.04) % 1));
+    const p3 = this.path1.getPointAt(Math.abs((this.stopFrame + 0.03) % 1));
+    const p4 = this.path1.getPointAt(Math.abs((this.stopFrame - 0.03) % 1));
 
     const amps = 2; // + Math.sin(realTime * Math.PI / 180) * 45;
     const tempX = amps * Math.sin(this.frames * Math.PI / 180) * 0.45;

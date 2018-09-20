@@ -1,14 +1,15 @@
 import QuickVR from 'three-quickvr';
 import THREE from '../../Three';
 import { Generator } from '../../utils/simplexGenerator';
-import metal from '../../../resources/images/matallo.jpg';
-import bump from '../../../resources/images/matallo_bmp.jpg';
+import metal from '../../../resources/images/int1.jpg';
+
 // Render Class Object //
 export default class Render {
   constructor() {
     this.frames = 0;
     this.stopFrame = 0;
     this.allowChange = false;
+    this.background = '#000000';
     this.timeout = 6000;
     this.isRnd = true;
     this.quickvr = new QuickVR();
@@ -48,9 +49,9 @@ export default class Render {
     this.quickvr.scene.background = new THREE.Color(this.background);
 
     // Set Light //
-    this.lightA = new THREE.PointLight(0xAA0000, 1, 450);
-    this.lightB = new THREE.AmbientLight(0xFFAA00, 1, 450);
-    this.lightC = new THREE.PointLight(0x00FF00, 1, 450);
+    this.lightA = new THREE.PointLight(0xFF0000, 1, 450);
+    this.lightB = new THREE.AmbientLight(0xAA00FF, 1, 450);
+    this.lightC = new THREE.PointLight(0x0022FF, 1, 450);
     this.quickvr.scene.add(this.lightA);
     this.quickvr.scene.add(this.lightB);
     this.quickvr.scene.add(this.lightC);
@@ -68,15 +69,16 @@ export default class Render {
   createScene = () => {
     const texloader = new THREE.TextureLoader();
     const texture = texloader.load(metal);
-    const bumptexture = texloader.load(bump);
+    // const bumptexture = texloader.load(bump);
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
     texture.offset.set(0, 0);
-    texture.repeat.set(35, 5);
+    texture.repeat.set(125, 5);
 
     this.tunnelMaterial = new THREE.MeshPhongMaterial({
       map: texture,
+      transparent: true,
       side: THREE.DoubleSide,
-      bumpMap: bumptexture
+      // bumpMap: bumptexture
     });
 
     const initialPoints = [
@@ -101,9 +103,9 @@ export default class Render {
     const tube1 = new THREE.Mesh(
       new THREE.TubeGeometry(
         this.path1,
-        150,
-        40,
-        18,
+        160,
+        10,
+        16,
         true
       ),
       this.tunnelMaterial,
@@ -136,18 +138,18 @@ export default class Render {
   };
 
   renderScene = () => {
-    this.stopFrame += 0.0001;
+    this.stopFrame += 0.00006;
     // Get the point at the specific percentage
     const p1 = this.path1.getPointAt(Math.abs((this.stopFrame) % 1));
     const p2 = this.path1.getPointAt(Math.abs((this.stopFrame) % 1));
     const p3 = this.path1.getPointAt(Math.abs((this.stopFrame + 0.03) % 1));
     const p4 = this.path1.getPointAt(Math.abs((this.stopFrame - 0.03) % 1));
 
-    const amps = 2; // + Math.sin(realTime * Math.PI / 180) * 45;
+    const amps = 5; // + Math.sin(realTime * Math.PI / 180) * 45;
     const tempX = amps * Math.sin(this.frames * Math.PI / 180) * 0.45;
     const tempY = amps * Math.cos(this.frames * Math.PI / 180) * 0.45;
     this.lightA.position.set(p2.x, p2.y, p2.z);
-    this.lightB.position.set(p3.x, p3.y, p3.z);
+    this.lightB.position.set(p3.x, p3.y, p3.z + amps);
     this.lightC.position.set(p4.x, p4.y, p4.z);
     // Camera
     this.quickvr.camera.position.set(p1.x + tempX, p1.y + tempY, p1.z + tempY);

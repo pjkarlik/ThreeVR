@@ -10,10 +10,8 @@ import yneg from '../../../resources/images/sky/negy.jpg';
 import zpos from '../../../resources/images/sky/posz.jpg';
 import zneg from '../../../resources/images/sky/negz.jpg';
 
-import stone from '../../../resources/images/matallo.jpg';
+import stone from '../../../resources/images/grate_t.png';
 import bmp from '../../../resources/images/matallo_bmp.jpg';
-import grate from '../../../resources/images/grate_t.png';
-import bmpg from '../../../resources/images/grate_bmp.jpg';
 
 // Render Class Object //
 export default class Render {
@@ -22,9 +20,16 @@ export default class Render {
     this.mirror = 4;
     this.scale = 1.0;
     this.ratio = 1024;
-    this.size = 0.2;
+    this.size = 0.5;
+    this.dsize = this.size * 2;
+    this.grid = 8;
     this.maze = new BinaryMaze();
     this.quickvr = new QuickVR();
+    this.camera = {
+      x: 0,
+      y: 0
+    };
+
     this.width = window.innerWidth;
     this.height = window.innerHeight;
     this.devicePixelRatio = window.devicePixelRatio;
@@ -32,16 +37,62 @@ export default class Render {
     this.amount = 3;
     this.adef = 360 / this.amount + 1;
     this.splineObject = [];
+    this.controller = null;
+    window.addEventListener( 'vr controller connected', (e) => {
+      this.vrController(e);
+    }, false);
 
     this.init();
     this.createScene();
     this.renderLoop();
   }
 
+  vrController = (event) => {
+    this.controller = event.detail;
+    this.quickvr.scene.add(this.controller);
+    this.controller.standingMatrix = this.quickvr.renderer.vr.getStandingMatrix();
+    this.controller.head = this.quickvr.camera;
+    const material = new THREE.MeshStandardMaterial({
+      color: 0xDB3236
+    });
+    const mesh = new THREE.Mesh(
+      new THREE.CylinderGeometry( 0.005, 0.05, 0.1, 6 ),
+      material
+    );
+    const handle = new THREE.Mesh(
+      new THREE.BoxGeometry( 0.03, 0.1, 0.03 ),
+      material
+    );
+  
+    material.flatShading = true;
+    mesh.rotation.x = -Math.PI / 2;
+    handle.position.y = -0.05;
+    mesh.add(handle);
+    mesh.castShadows = true;
+    mesh.receiveShadows = true;
+    this.controller.userData.mesh = this.mesh;//  So we can change the color later.
+    this.controller.add(mesh);
+    this.controller.updateCallback = (e) => {
+      if(this.controller.getButton('thumbpad').isPressed) {
+        const axes = this.controller.gamepad.axes;
+        this.camera.x = (axes[0]);
+        this.camera.y = (axes[1]);
+      }
+    };
+    // this.controller.addEventListener( 'thumbpad press ', (e) => {
+    // const axes = this.controller.gamepad.axes;
+    // this.camera.x = axes[0];
+    // this.camera.y = axes[1];
+    // this.checkCamera();
+    // alert(`${JSON.stringify(this.controller.buttonNames)}`);
+    // }, false);
+  };
+
   init = () => {
     // Set Render and Scene //
-    this.quickvr.render.antialias = true;
-
+    // this.quickvr.renderer.antialias = true;
+    this.quickvr.renderer.shadowMapEnabled = true;
+    // this.quickvr.renderer.shadowMapType = THREE.PCFSoftShadowMap;
     this.quickvr.scene.fog = new THREE.FogExp2(0x000000, 0.275);
 
     // Set AmbientLight //
@@ -57,7 +108,7 @@ export default class Render {
     this.skybox.mapping = THREE.CubeRefractionMapping;
     this.quickvr.scene.background = this.skybox;
   };
-
+ 
   getRandomVector = (a, b, c) => {
     const x = (a || 0.0) + (10 - Math.random() * 20);
     const y = (b || 0.0) + (15 - Math.random() * 30);
@@ -66,7 +117,7 @@ export default class Render {
   };
 
   getMazeBlob = () => {
-    const mazeReturn = this.maze.generateMaze(11, 11);
+    const mazeReturn = this.maze.generateMaze(this.grid, this.grid);
     const mazeWidth = this.maze.cc * this.size;
     const mazeHeight = this.maze.cr * this.size;
     return {
@@ -96,22 +147,7 @@ export default class Render {
       bumpScale: 0.95,
     });
 
-    // texture = texloader.load(grate, () => {
-    //   texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-    // });
-  
-    // bmpMap = texloader.load(bmpg, () => {
-    //   bmpMap.wrapS = bmpMap.wrapT = THREE.RepeatWrapping;
-    // });
-
-    // this.grateMaterial = new THREE.MeshPhongMaterial({
-    //   map: texture,
-    //   bumpMap: bmpMap,
-    //   transparent: true,
-    //   bumpScale: 0.95,
-    // });
-
-    let mve = 0;
+    let mve = -1;
     for (let v = 0; v < 1; v += 1) {
 
       const blob = this.getMazeBlob();
@@ -126,7 +162,7 @@ export default class Render {
           this.drawCube({ x, y, z });
         }
       }
-      mve += this.size * 2;
+      mve += this.dsize;
     }
   };
 
@@ -139,24 +175,31 @@ export default class Render {
       size,
       size,
       size
-      // size * 0.45, 16, 16
     ); 
-    geometry.rotateX(90 * Math.PI / 180);
 
-    geometry.computeVertexNormals();
     const object = new THREE.Mesh(
       geometry,
       this.boxMaterial,
     );
     object.position.set(
       xOffset + point.x * size,
-      1.15 + point.z,
+      this.dsize + point.z,
       yOffset + point.y * size
     );
     this.quickvr.scene.add(object);
   };
 
+  checkCamera = () => {
+    this.quickvr.camera.position.set(
+      this.camera.x + this.camera.x,
+      2,
+      this.camera.y + this.camera.y
+    );
+  };
+
   renderLoop = () => {
-    window.requestAnimationFrame(this.renderLoop.bind(this));
+    this.checkCamera();
+    THREE.VRController.update();
+    window.requestAnimationFrame(this.renderLoop);
   };
 }

@@ -10,15 +10,14 @@ export default class Particle {
     this.x = config.x;
     this.y = config.y;
     this.z = config.z;
-    const min = config.min || 1;
-    const max = config.max || 4;
+    const min = config.min || 5;
+    const max = config.max || 10;
     this.vx = config.vx || (Math.abs(Math.random() * max) - min);
     this.vy = config.vy || (Math.abs(Math.random() * max) - min);
     this.vz = config.vz || (Math.abs(Math.random() * max) - min);
-
+    
     this.settings = config.settings;
     this.box = config.box;
-    this.update();
   }
 
   update = () => {
@@ -26,11 +25,13 @@ export default class Particle {
     if (this.y > this.box.top + this.size) {
       this.vy *= -bounce;
       this.vx *= bounce;
+      this.vz *= bounce;
       this.y = this.box.top;
     }
     if (this.y < this.box.bottom - this.size) {
       this.vy *= -bounce;
       this.vx *= bounce;
+      this.vz *= bounce;
       this.y = this.box.bottom;
     }
     if (this.x < this.box.left - this.size) {
@@ -49,14 +50,13 @@ export default class Particle {
       this.vz *= -bounce;
       this.z = this.box.right;
     }
-
     this.x += this.vx;
     this.y += this.vy;
     this.z += this.vz;
 
     this.vy -= gravity;
 
-    this.size -= (this.life * 0.0002);
+    this.size -= (this.life * 0.001);
     this.life++;
   }
 }

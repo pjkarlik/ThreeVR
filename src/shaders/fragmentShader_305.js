@@ -2,12 +2,14 @@ const fragmentShaderA = `
 ${window.THREE.ShaderChunk.common}
 ${window.THREE.ShaderChunk.packing}
 ${window.THREE.ShaderChunk.shadowmap_pars_fragment}
+
 uniform float time;
 uniform float angle;
 uniform float dec;
 uniform vec2 resolution;
 varying vec2 vUv;
 varying float noise;
+
 vec3 mod289(vec3 x)
 {
   return x - floor(x * (1.0 / 289.0)) * 289.0;
@@ -151,6 +153,7 @@ float pnoise(vec3 P, vec3 rep)
   float n_xyz = mix(n_yz.x, n_yz.y, fade_xyz.x);
   return 2.2 * n_xyz;
 }
+
 float turbulence(vec3 p) {
   float w = 100.0;
   float t = -.5;
@@ -160,27 +163,37 @@ float turbulence(vec3 p) {
   }
   return t;
 }
+
 float hash (float v) {
   return smoothstep(0.0, 1.0, (sin(v) + cos(v))) * 10.0;
 }
+
 float dist(float a,float b,float c,float d) {
    return sqrt(float((a - c) * (a - c) + (b - d) * (b - d)));
 }
+
 void main() {
   vec2 q = vUv;
   vec2 rz = resolution.xy;
-  float xdec = dec * 0.45;
+  float xdec = dec * 0.5;
+
   float noise = pnoise(vec3(
     (q.x * 3.0) * xdec,
     (q.y / 1.5) * xdec,
     1.0 + time * 0.5
   ), vec3(0.0, 0.0, 0.0));
+
   float o = (noise * 255.0);
   float r = sin(noise * 15.0);
+  // float b = r;
+  // float g = b;
   float g = sin(noise * 13.0);
   float b = sin(noise * 12.0);
+
+  // vec3 colorz = vec3(o, o, o);
   vec3 colorz = vec3(r, g, b);
-  gl_FragColor = vec4(colorz, 1.0 - o);
+  gl_FragColor = vec4(colorz, o);
+
 }
 `;
 

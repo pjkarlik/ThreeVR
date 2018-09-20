@@ -2,7 +2,10 @@ import * as THREE from 'three';
 // build/three.js from node_module/three
 
 window.THREE = THREE;
-require('three/examples/js/controls/OrbitControls.js');
+require('./utils/VRController.js');
+require('./utils/datguivr.js');
+
+// require('three/examples/js/controls/OrbitControls.js');
 // require('three/examples/js/controls/FirstPersonControls.js');
 // require('three/examples/js/effects/AnaglyphEffect.js');
 // require('three/examples/js/postprocessing/EffectComposer.js');

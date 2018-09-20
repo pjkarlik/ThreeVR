@@ -13,16 +13,16 @@ import zneg from '../../resources/images/space/negz.jpg';
 // Render Class Object //
 export default class Render {
   constructor() {
-    this.amount = 10;
+    this.amount = 11;
     this.size = 0.10;
-    this.strength = 0.0;
+    this.strength = 0.2;
     this.time = 0;
     this.rtime = 0;
-    this.isMove = false;
+    this.isMove = true;
     this.frame = 0;
-    this.speed = 0.15;
-    this.iteration = 0.15;
-    this.spacing = 0.01;
+    this.speed = 0.01;
+    this.iteration = 0.07;
+    this.spacing = 0.02;
     this.objects = [];
     this.generator = new Generator(10);
     this.clock = new THREE.Clock();
@@ -76,24 +76,32 @@ export default class Render {
   datGui = () => {
     const options = {
       spacing: this.spacing,
-      strength: this.strength
+      strength: this.strength,
+      moving: this.isMove,
+      speed: this.speed
     };
     window.dat.GUIVR.enableMouse(this.quickvr.camera);
     this.gui = window.dat.GUIVR.create('Settings');
-    this.gui.add(options, 'spacing', 0, 1).step(0.001).onChange((val) => {
+    this.gui.add(options, 'spacing', 0, 2).step(0.001).onChange((val) => {
       this.spacing = val;
     });
-    this.gui.add(options, 'strength', 0, 1).step(0.001).onChange((val) => {
+    this.gui.add(options, 'strength', 0, 0.5).step(0.001).onChange((val) => {
       this.strength = val;
     });
-    this.gui.position.set(-0.5,.75,-1.75);
-    this.gui.rotation.x = -Math.PI/9;
+    this.gui.add(options, 'moving').onChange((val) => {
+      this.isMove = val;
+    });
+    this.gui.add(options, 'speed', 0, 0.15).step(0.001).onChange((val) => {
+      this.speed = val;
+    });
+    this.gui.position.set(-0.5,1.95,-1.85);
+    this.gui.rotation.x = Math.PI/15;
     this.quickvr.scene.add(this.gui);
   };
 
   init = () => {
     this.quickvr.render.antialias = true;
-    // this.quickvr.scene.fog = new THREE.FogExp2(0x000000, 0.275);
+    this.quickvr.scene.fog = new THREE.FogExp2(0x000000, 0.475);
     this.controller = this.quickvr.renderer.vr.getController(0);
     const urls = [xpos, xneg, ypos, yneg, zpos, zneg];
     this.skybox = new THREE.CubeTextureLoader().load(urls);
@@ -113,16 +121,18 @@ export default class Render {
   };
 
   randomObjects = () => {
-    const cube = new THREE.CubeGeometry(this.size, this.size / 3, this.size);
+    const cube = new THREE.PlaneGeometry(this.size, this.size);
     for (let y = 0; y < this.amount; y++) {
       for (let x = 0; x < this.amount; x++) {
         const object = new THREE.Mesh(
           cube,
           new THREE.MeshPhongMaterial({
             color: 0xaeaeae,
-            specular: 0x999999
+            specular: 0x999999,
+            side: THREE.DoubleSide
           })
         );
+        object.rotateX(-90 * Math.PI/180);
         this.objects.push(object);
         this.quickvr.scene.add(object);
       }
@@ -149,13 +159,13 @@ export default class Render {
         const moveTime = this.isMove ? timeStop : this.rtime;
         const movePosition = this.isMove ? this.frame : 0;
         const object = this.objects[x + (y * this.amount)];
-        const noiseX = this.generator.simplex3(x * this.iteration, y * this.iteration + moveTime, 0);
+        const noiseX = this.generator.simplex3(x * this.iteration + moveTime, y * this.iteration, 0);
 
         const px = (-offset) + (x * size);
-        const py = (1) + (noiseX * this.strength);
-        const pz = (-3) + (-offset) + (y * size);
+        const py = (1) + (noiseX * (this.strength + this.spacing));
+        const pz = (-2.5) + (-offset) + (y * size);
         
-        object.position.set(px, py, pz - movePosition);
+        object.position.set(px - movePosition, py, pz);
         object.material.color.setHSL(py * 0.5, .75, .49 );
 
       }

@@ -13,9 +13,9 @@ import zneg from '../../resources/images/space/negz.jpg';
 // Render Class Object //
 export default class Render {
   constructor() {
-    this.amount = 11;
+    this.amount = 8;
     this.size = 0.10;
-    this.strength = 0.2;
+    this.strength = 0.12;
     this.time = 0;
     this.rtime = 0;
     this.isMove = true;
@@ -42,7 +42,9 @@ export default class Render {
     this.controller = event.detail;
     this.controller.standingMatrix = this.quickvr.renderer.vr.getStandingMatrix();
     this.controller.head = this.quickvr.camera;
-    const material = new THREE.MeshStandardMaterial({
+    const material = new THREE.MeshPhongMaterial({
+      // shading: THREE.flatShading,
+      flatShading: true,
       color: 0xDB3236
     });
     const mesh = new THREE.Mesh(
@@ -51,41 +53,50 @@ export default class Render {
     );
     const handle = new THREE.Mesh(
       new THREE.BoxGeometry( 0.03, 0.1, 0.03 ),
-      material
+      material,
     );
   
-    material.flatShading = true;
     mesh.rotation.x = -Math.PI / 2;
     handle.position.y = -0.05;
     mesh.add(handle);
     mesh.castShadows = true;
     mesh.receiveShadows = true;
-    this.controller.userData.mesh = this.mesh;//  So we can change the color later.
+    this.controller.userData.mesh = mesh;//  So we can change the color later.
     this.controller.add(mesh);
     this.quickvr.scene.add(this.controller);
     this.guiInputHelper = window.dat.GUIVR.addInputObject(this.controller);
     this.quickvr.scene.add(this.guiInputHelper);
     this.controller.addEventListener( 'primary press began', (event) => {
+      event.target.userData.mesh.material.color.setHex(0x3642DB );
       this.guiInputHelper.pressed(true);
     });
     this.controller.addEventListener( 'primary press ended', (event) => {
+      event.target.userData.mesh.material.color.setHex(0xDB3236);
       this.guiInputHelper.pressed(false);
     });
   };
 
   datGui = () => {
     const options = {
+      size: this.size,
       spacing: this.spacing,
+      detail: this.iteration,
       strength: this.strength,
       moving: this.isMove,
       speed: this.speed
     };
     window.dat.GUIVR.enableMouse(this.quickvr.camera);
     this.gui = window.dat.GUIVR.create('Settings');
+    this.gui.add(options, 'size', 0, 1).step(0.001).onChange((val) => {
+      this.size = val;
+    });
     this.gui.add(options, 'spacing', 0, 2).step(0.001).onChange((val) => {
       this.spacing = val;
     });
-    this.gui.add(options, 'strength', 0, 0.5).step(0.001).onChange((val) => {
+    this.gui.add(options, 'detail', 0, 0.15).step(0.0001).onChange((val) => {
+      this.iteration = val;
+    });
+    this.gui.add(options, 'strength', 0, 0.75).step(0.001).onChange((val) => {
       this.strength = val;
     });
     this.gui.add(options, 'moving').onChange((val) => {
@@ -101,7 +112,7 @@ export default class Render {
 
   init = () => {
     this.quickvr.render.antialias = true;
-    this.quickvr.scene.fog = new THREE.FogExp2(0x000000, 0.475);
+    // this.quickvr.scene.fog = new THREE.FogExp2(0x000000, 0.475);
     this.controller = this.quickvr.renderer.vr.getController(0);
     const urls = [xpos, xneg, ypos, yneg, zpos, zneg];
     this.skybox = new THREE.CubeTextureLoader().load(urls);
@@ -121,7 +132,7 @@ export default class Render {
   };
 
   randomObjects = () => {
-    const cube = new THREE.PlaneGeometry(this.size, this.size);
+    const cube = new THREE.CubeGeometry(this.size, this.size, this.size * 3); // 
     for (let y = 0; y < this.amount; y++) {
       for (let x = 0; x < this.amount; x++) {
         const object = new THREE.Mesh(
@@ -129,7 +140,7 @@ export default class Render {
           new THREE.MeshPhongMaterial({
             color: 0xaeaeae,
             specular: 0x999999,
-            side: THREE.DoubleSide
+            flatShading: true,
           })
         );
         object.rotateX(-90 * Math.PI/180);
@@ -164,9 +175,11 @@ export default class Render {
         const px = (-offset) + (x * size);
         const py = (1) + (noiseX * (this.strength + this.spacing));
         const pz = (-2.5) + (-offset) + (y * size);
-        
+        object.scale.x = this.size * 10;
+        object.scale.y = this.size * 10;
+        object.scale.z = this.size * 10;
         object.position.set(px - movePosition, py, pz);
-        object.material.color.setHSL(py * 0.5, .75, .49 );
+        object.material.color.setHSL(py * 0.65, .75, .49 );
 
       }
     }

@@ -4,6 +4,7 @@ const path = require('path');
 const pkgInfo = require('./package.json');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const DEV_PORT = 2020;
 const { name, version, description, repository } = pkgInfo;
@@ -121,6 +122,12 @@ const config = {
       filename: 'style/[name].[contenthash].css',
       allChunks: true
     }),
+    new CopyWebpackPlugin([
+      {
+        from: './splash.png',
+        to: './splash.png'
+      }
+    ]),
     new HtmlWebpackPlugin({
       css: 'styles/styles.css',
       title: 'three vr experiments',

@@ -18,7 +18,7 @@ export default class Render {
     this.size = 0.14;
     this.strength = 0.18;
     this.iteration = 0.14;
-    this.spacing = 0.06;
+    this.spacing = 0.05;
 
     this.time = 0;
     this.rtime = 0;
@@ -36,7 +36,7 @@ export default class Render {
     this.emitter = {
       x: 0,
       y: 1,
-      z: -1.17
+      z: -1.95
     };
 
     this.datGui();
@@ -99,7 +99,8 @@ export default class Render {
       moving: this.isMove,
       speed: this.speed,
       x: this.emitter.x,
-      y: this.emitter.z
+      y: this.emitter.z,
+      z: this.emitter.y
     };
 
     const guiVR = window.dat.GUIVR;
@@ -108,14 +109,14 @@ export default class Render {
     // this.gui = guiVR.create('Settings');
     const noiseOptions = guiVR.create('Noise Options');
     const displayOptions = guiVR.create('Display Options');
-
-    noiseOptions.add(options, 'size', 0, 1).step(0.001).onChange((val) => {
+    displayOptions.close();
+    noiseOptions.add(options, 'size', 0.001, 1).step(0.001).onChange((val) => {
       this.size = val;
     });
-    noiseOptions.add(options, 'spacing', 0, 2).step(0.001).onChange((val) => {
+    noiseOptions.add(options, 'spacing', 0.05, 2).step(0.001).onChange((val) => {
       this.spacing = val;
     });
-    noiseOptions.add(options, 'detail', 0, 0.95).step(0.001).onChange((val) => {
+    noiseOptions.add(options, 'detail', 0.001, 0.5).step(0.001).onChange((val) => {
       this.iteration = val;
     });
     noiseOptions.add(options, 'strength', 0, 0.5).step(0.001).onChange((val) => {
@@ -124,8 +125,11 @@ export default class Render {
     displayOptions.add(options, 'x', -2, 2).step(0.001).onChange((val) => {
       this.emitter.x = val;
     });
-    displayOptions.add(options, 'y', -2, 2).step(0.001).onChange((val) => {
+    displayOptions.add(options, 'y', -6, 2).step(0.001).onChange((val) => {
       this.emitter.z = val;
+    });
+    displayOptions.add(options, 'z', -6, 6).step(0.001).onChange((val) => {
+      this.emitter.y = val;
     });
     displayOptions.add(options, 'moving').onChange((val) => {
       this.isMove = val;
@@ -134,13 +138,13 @@ export default class Render {
       this.speed = val;
     });
 
-    displayOptions.position.set(-0.5,1.95,-2.25);
-    // displayOptions.rotation.y = Math.PI/22;
-    this.quickvr.scene.add(displayOptions);
-
-    noiseOptions.position.set(0.5,1.95,-1.85);
-    // noiseOptions.rotation.y = Math.PI/22;
+    noiseOptions.position.set(-0.5,1.85,-2.20);
+    // noiseOptions.rotation.x = Math.PI/22;
     this.quickvr.scene.add(noiseOptions);
+
+    displayOptions.position.set(-0.5,2.35,-2.15);
+    displayOptions.rotation.x = Math.PI/16;
+    this.quickvr.scene.add(displayOptions);
   };
 
   init = () => {

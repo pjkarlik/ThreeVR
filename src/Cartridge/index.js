@@ -14,25 +14,37 @@ import zneg from '../../resources/images/space/negz.jpg';
 export default class Render {
   constructor() {
     this.amount = 8;
-    this.size = 0.10;
-    this.strength = 0.12;
+
+    this.size = 0.14;
+    this.strength = 0.18;
+    this.iteration = 0.14;
+    this.spacing = 0.06;
+
     this.time = 0;
     this.rtime = 0;
-    this.isMove = true;
     this.frame = 0;
     this.speed = 0.01;
-    this.iteration = 0.07;
-    this.spacing = 0.02;
+    this.isMove = false;
+
     this.objects = [];
+
     this.generator = new Generator(10);
     this.clock = new THREE.Clock();
     this.quickvr = new QuickVR();
     this.controller = null;
+
+    this.emitter = {
+      x: 0,
+      y: 1,
+      z: -1.17
+    };
+
     this.datGui();
 
     window.addEventListener( 'vr controller connected', (e) => {
       this.vrController(e);
     }, false);
+  
     this.init();
     this.randomObjects();
     this.renderLoop();
@@ -43,7 +55,6 @@ export default class Render {
     this.controller.standingMatrix = this.quickvr.renderer.vr.getStandingMatrix();
     this.controller.head = this.quickvr.camera;
     const material = new THREE.MeshPhongMaterial({
-      // shading: THREE.flatShading,
       flatShading: true,
       color: 0xDB3236
     });
@@ -61,11 +72,14 @@ export default class Render {
     mesh.add(handle);
     mesh.castShadows = true;
     mesh.receiveShadows = true;
-    this.controller.userData.mesh = mesh;//  So we can change the color later.
+
+    this.controller.userData.mesh = mesh;
     this.controller.add(mesh);
+
     this.quickvr.scene.add(this.controller);
     this.guiInputHelper = window.dat.GUIVR.addInputObject(this.controller);
     this.quickvr.scene.add(this.guiInputHelper);
+
     this.controller.addEventListener( 'primary press began', (event) => {
       event.target.userData.mesh.material.color.setHex(0x3642DB );
       this.guiInputHelper.pressed(true);
@@ -83,42 +97,60 @@ export default class Render {
       detail: this.iteration,
       strength: this.strength,
       moving: this.isMove,
-      speed: this.speed
+      speed: this.speed,
+      x: this.emitter.x,
+      y: this.emitter.z
     };
-    window.dat.GUIVR.enableMouse(this.quickvr.camera);
-    this.gui = window.dat.GUIVR.create('Settings');
-    this.gui.add(options, 'size', 0, 1).step(0.001).onChange((val) => {
+
+    const guiVR = window.dat.GUIVR;
+    guiVR.enableMouse(this.quickvr.camera);
+
+    // this.gui = guiVR.create('Settings');
+    const noiseOptions = guiVR.create('Noise Options');
+    const displayOptions = guiVR.create('Display Options');
+
+    noiseOptions.add(options, 'size', 0, 1).step(0.001).onChange((val) => {
       this.size = val;
     });
-    this.gui.add(options, 'spacing', 0, 2).step(0.001).onChange((val) => {
+    noiseOptions.add(options, 'spacing', 0, 2).step(0.001).onChange((val) => {
       this.spacing = val;
     });
-    this.gui.add(options, 'detail', 0, 0.15).step(0.0001).onChange((val) => {
+    noiseOptions.add(options, 'detail', 0, 0.95).step(0.001).onChange((val) => {
       this.iteration = val;
     });
-    this.gui.add(options, 'strength', 0, 0.75).step(0.001).onChange((val) => {
+    noiseOptions.add(options, 'strength', 0, 0.5).step(0.001).onChange((val) => {
       this.strength = val;
     });
-    this.gui.add(options, 'moving').onChange((val) => {
+    displayOptions.add(options, 'x', -2, 2).step(0.001).onChange((val) => {
+      this.emitter.x = val;
+    });
+    displayOptions.add(options, 'y', -2, 2).step(0.001).onChange((val) => {
+      this.emitter.z = val;
+    });
+    displayOptions.add(options, 'moving').onChange((val) => {
       this.isMove = val;
     });
-    this.gui.add(options, 'speed', 0, 0.15).step(0.001).onChange((val) => {
+    displayOptions.add(options, 'speed', 0, 0.15).step(0.001).onChange((val) => {
       this.speed = val;
     });
-    this.gui.position.set(-0.5,1.95,-1.85);
-    this.gui.rotation.x = Math.PI/15;
-    this.quickvr.scene.add(this.gui);
+
+    displayOptions.position.set(-0.5,1.95,-2.25);
+    // displayOptions.rotation.y = Math.PI/22;
+    this.quickvr.scene.add(displayOptions);
+
+    noiseOptions.position.set(0.5,1.95,-1.85);
+    // noiseOptions.rotation.y = Math.PI/22;
+    this.quickvr.scene.add(noiseOptions);
   };
 
   init = () => {
     this.quickvr.render.antialias = true;
-    // this.quickvr.scene.fog = new THREE.FogExp2(0x000000, 0.475);
+    this.quickvr.scene.fog = new THREE.FogExp2(0x000000, 0.375);
+
     this.controller = this.quickvr.renderer.vr.getController(0);
     const urls = [xpos, xneg, ypos, yneg, zpos, zneg];
     this.skybox = new THREE.CubeTextureLoader().load(urls);
     this.skybox.format = THREE.RGBFormat;
-    // CubeReflectionMapping || CubeRefractionMapping//
-    this.skybox.mapping = THREE.CubeReflectionMapping;
     this.quickvr.scene.background = this.skybox;
 
     // Set Lights //
@@ -132,7 +164,7 @@ export default class Render {
   };
 
   randomObjects = () => {
-    const cube = new THREE.CubeGeometry(this.size, this.size, this.size * 3); // 
+    const cube = new THREE.CubeGeometry(this.size, this.size, this.size / 2); // 
     for (let y = 0; y < this.amount; y++) {
       for (let x = 0; x < this.amount; x++) {
         const object = new THREE.Mesh(
@@ -155,7 +187,7 @@ export default class Render {
     const offset = this.amount * (size / 2) - (size / 2);
     // advance time and tick draw loop for time segment
     this.frame += this.speed; 
-    this.rtime += 0.005;
+    this.rtime += this.speed;
     if (this.frame > size) {
       // the time phase of the noise wave moves
       // once the cubes moved one space
@@ -167,14 +199,15 @@ export default class Render {
     
     for (let y = 0; y < this.amount; y++) {
       for (let x = 0; x < this.amount; x++) {
+        // its all interconnected between iteration and moveTime
         const moveTime = this.isMove ? timeStop : this.rtime;
         const movePosition = this.isMove ? this.frame : 0;
         const object = this.objects[x + (y * this.amount)];
         const noiseX = this.generator.simplex3(x * this.iteration + moveTime, y * this.iteration, 0);
 
-        const px = (-offset) + (x * size);
-        const py = (1) + (noiseX * (this.strength + this.spacing));
-        const pz = (-2.5) + (-offset) + (y * size);
+        const px = (this.emitter.x) + (-offset) + (x * size);
+        const py = (this.emitter.y) + (noiseX * (this.strength + this.spacing));
+        const pz = (this.emitter.z) + (-offset) + (y * size);
         object.scale.x = this.size * 10;
         object.scale.y = this.size * 10;
         object.scale.z = this.size * 10;

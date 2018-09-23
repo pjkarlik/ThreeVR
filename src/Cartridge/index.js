@@ -128,7 +128,7 @@ export default class Render {
     displayOptions.add(options, 'y', -6, 2).step(0.001).onChange((val) => {
       this.emitter.z = val;
     });
-    displayOptions.add(options, 'z', -6, 6).step(0.001).onChange((val) => {
+    displayOptions.add(options, 'z', -1.5, 3.5).step(0.001).onChange((val) => {
       this.emitter.y = val;
     });
     displayOptions.add(options, 'moving').onChange((val) => {

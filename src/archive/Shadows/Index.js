@@ -1,14 +1,14 @@
 import QuickVR from 'three-quickvr';
 
-import THREE from '../Three';
-import { Generator } from '../utils/simplexGenerator';
+import THREE from '../../Three';
+import { Generator } from '../../utils/simplexGenerator';
 
-import xpos from '../../resources/images/sky/posx.jpg';
-import xneg from '../../resources/images/sky/negx.jpg';
-import ypos from '../../resources/images/sky/posy.jpg';
-import yneg from '../../resources/images/sky/negy.jpg';
-import zpos from '../../resources/images/sky/posz.jpg';
-import zneg from '../../resources/images/sky/negz.jpg';
+import xpos from '../../../resources/images/sky/posx.jpg';
+import xneg from '../../../resources/images/sky/negx.jpg';
+import ypos from '../../../resources/images/sky/posy.jpg';
+import yneg from '../../../resources/images/sky/negy.jpg';
+import zpos from '../../../resources/images/sky/posz.jpg';
+import zneg from '../../../resources/images/sky/negz.jpg';
 
 // Render Class Object //
 export default class Render {

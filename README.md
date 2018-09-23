@@ -14,6 +14,8 @@
   The main render is a simplex noise function over a grid of objects, and using dat.guiVR you can control and change settings in real-time.
 
   ##### Past Experiment
+  - MeshDeform - simplex wave across a plan mesh, works pretty well with no shadows.
+  - Shadows - casing and recieving shadows - though this drags down Oculus Go displays.
   - MazeVR - binary maze and some testing for using the thumpad to move around the world environment. 
   - Monobus - particle system that allows the user to interact with the settings such as gravity and bounce. 
   - Tunnel - fly though a dark tunnel, no user interaction. 

@@ -1,5 +1,5 @@
 // 
-import Render from './Cartridge/';
+import Render from './Cartridge';
 // import Render from './archive/MazeVR/';
 import { description, version } from '../version.json';
 

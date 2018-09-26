@@ -79,22 +79,9 @@ export default class Render {
         this.camera.y = (axes[1]);
       }
     };
-    // this.controller.addEventListener( 'thumbpad press ', (e) => {
-    // const axes = this.controller.gamepad.axes;
-    // this.camera.x = axes[0];
-    // this.camera.y = axes[1];
-    // this.checkCamera();
-    // alert(`${JSON.stringify(this.controller.buttonNames)}`);
-    // }, false);
   };
 
   init = () => {
-    // Set Render and Scene //
-    // this.quickvr.renderer.antialias = true;
-    this.quickvr.renderer.shadowMapEnabled = true;
-    // this.quickvr.renderer.shadowMapType = THREE.PCFSoftShadowMap;
-    this.quickvr.scene.fog = new THREE.FogExp2(0x000000, 0.275);
-
     // Set AmbientLight //
     this.ambient = new THREE.AmbientLight(0xFFFFFF);
     this.ambient.position.set(0, 0, 0);
@@ -107,13 +94,6 @@ export default class Render {
     // CubeReflectionMapping || CubeRefractionMapping//
     this.skybox.mapping = THREE.CubeRefractionMapping;
     this.quickvr.scene.background = this.skybox;
-  };
- 
-  getRandomVector = (a, b, c) => {
-    const x = (a || 0.0) + (10 - Math.random() * 20);
-    const y = (b || 0.0) + (15 - Math.random() * 30);
-    const z = (c || 0.0) + (10 - Math.random() * 20);
-    return {x, y, z};
   };
 
   getMazeBlob = () => {
@@ -142,9 +122,7 @@ export default class Render {
     this.boxMaterial = new THREE.MeshPhongMaterial({
       map: texture,
       side: THREE.DoubleSide,
-      bumpMap: bmpMap,
-      transparent: true,
-      bumpScale: 0.95,
+      transparent: true
     });
 
     let mve = -1;

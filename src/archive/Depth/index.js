@@ -139,9 +139,9 @@ export default class Render {
   };
 
   getRandomVector = (a, b, c) => {
-    const x = (a || 0.0) + (2 - Math.random() * 4);
-    const y = (b || 0.0) + (2 - Math.random() * 6);
-    const z = (c || 0.0) + (2 - Math.random() * 4);
+    const x = (a || 0.0) + (4 - Math.random() * 8);
+    const y = (b || 0.0) + (6 - Math.random() * 12);
+    const z = (c || 0.0) + (4 - Math.random() * 8);
     return {x, y, z};
   };
 
@@ -172,7 +172,7 @@ export default class Render {
 
     const params = {
       scale: 0.05,
-      extrusionSegments: 100,
+      extrusionSegments: 200,
       radiusSegments: 5,
       radius: 0.25 + Math.random() * 1,
       closed: false
@@ -209,10 +209,9 @@ export default class Render {
       const evenItem = (i % 2 === 0);
       const stepPlace = ((i * this.adef) - this.frames) * Math.PI / 180;
       tempSpline.rotation.set(
-        -(this.frames) * Math.PI / 180,
+        evenItem ? -(this.frames) * Math.PI / 180 : (this.frames + (i * 25)) * Math.PI / 180,
         evenItem ? stepPlace : 0,
-        // evenItem ? 0 : stepPlace,
-        !evenItem ? 0 : ((i * this.adef) - this.frames) * Math.PI / 180
+        evenItem ? 0 : stepPlace,
       );
       tempSpline.position.set(this.emitter.x, this.emitter.y, this.emitter.z);
     }

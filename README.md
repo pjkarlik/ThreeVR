@@ -16,9 +16,9 @@
   ##### Past Experiment
   - MeshDeform - simplex wave across a plan mesh, works pretty well with no shadows.
   - Shadows - casing and recieving shadows - though this drags down Oculus Go displays.
-  - MazeVR - binary maze and some testing for using the thumpad to move around the world environment. 
-  - Monobus - particle system that allows the user to interact with the settings such as gravity and bounce. 
-  - Tunnel - fly though a dark tunnel, no user interaction. 
+  - [MazeVR](http://mazevr.surge.sh) - binary maze and some testing for using the thumpad to move around the world environment. 
+  - [Drift](http://driftvr.surge.sh) - particle system that changes around you as you sail though the field.
+  - [Tunnel](http://tunnelvr.surge.sh) - fly though a dark tunnel, no user interaction. 
 
  ## Application and Demo
 

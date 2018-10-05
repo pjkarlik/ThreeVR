@@ -16,7 +16,7 @@ export default class Render {
     this.amount = 8;
 
     this.objects = [];
-
+    this.saber = null;
     this.generator = new Generator(10);
     this.clock = new THREE.Clock();
     this.raycaster = new THREE.Raycaster();
@@ -83,15 +83,23 @@ export default class Render {
       color: 0xDB3236,
       dithering: true 
     });
-    const mesh = new THREE.Mesh(
+    const mesh = this.userController = new THREE.Mesh(
       new THREE.CylinderGeometry( 0.005, 0.05, 0.1, 6 ),
       material
     );
+
     const handle = new THREE.Mesh(
       new THREE.BoxGeometry( 0.03, 0.1, 0.03 ),
       material,
     );
-  
+
+    this.saber = new THREE.Mesh(
+      new THREE.CylinderGeometry( 0.001, 0.5, 2, 12 ),
+      material,
+    );
+    
+    scene.add(this.saber);
+
     mesh.rotation.x = -Math.PI / 2;
     handle.position.y = -0.05;
     
@@ -107,12 +115,16 @@ export default class Render {
     scene.add(this.guiInputHelper);
 
     this.controller.addEventListener( 'primary press began', (event) => {
-      event.target.userData.mesh.material.color.setHex(0x3642DB );
+      const mesh = event.target.userData.mesh;
+      mesh.material.color.setHex(0x3642DB);
       this.guiInputHelper.pressed(true);
+      this.toggleSaber(true);
     });
     this.controller.addEventListener( 'primary press ended', (event) => {
-      event.target.userData.mesh.material.color.setHex(0xDB3236);
+      const mesh = event.target.userData.mesh;
+      mesh.material.color.setHex(0xDB3236);
       this.guiInputHelper.pressed(false);
+      this.toggleSaber(false);
     });
   };
 
@@ -176,12 +188,20 @@ export default class Render {
 
   };
 
-  rayCasting = () => {
+  toggleSaber = (state) => {
+    alert(JSON.stringify(this.controller.userData));
+    const { position, rotation } = this.controller.userData.mesh;
+    if(state) {
+      this.saber.position.set(position.x, position.y, position.z);
+      // this.saber.rotation.set(rotation.x, rotation.y, rotation.z);
+    } else {
+      this.saber.position.set(1000,1000,1000);
+    }
 
   };
 
   renderLoop = () => {
-    this.rayCasting();
+    // this.rayCasting();
     THREE.VRController.update();
     window.requestAnimationFrame(this.renderLoop);
   };

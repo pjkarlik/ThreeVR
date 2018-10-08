@@ -1,12 +1,13 @@
 import QuickVR from 'three-quickvr';
 import THREE from '../../Three';
 import { Generator } from '../../utils/simplexGenerator';
-import metal from '../../../resources/images/int1.jpg';
+import metal from '../../../resources/images/matallo.jpg';
+import tbs from '../../../resources/images/int1.jpg';
 
 // Render Class Object //
 export default class Render {
   constructor() {
-    this.frames = 0;
+    this.frames = 100;
     this.stopFrame = 0;
     this.allowChange = false;
     this.background = '#000000';
@@ -28,11 +29,7 @@ export default class Render {
       max: 1500,
       min: 0
     };
-    this.tubeCongif = {
-      segments: 300,
-      detail: 20,
-      radius: 5
-    };
+  
     this.geometry = null;
     this.setRender();
   }
@@ -47,11 +44,11 @@ export default class Render {
   setRender = () => {
     // Set Render and Scene //
     this.quickvr.scene.background = new THREE.Color(this.background);
-
+    this.quickvr.scene.fog = new THREE.FogExp2(new THREE.Color(0x000000), 0.0145);
     // Set Light //
-    this.lightA = new THREE.PointLight(0xFF0000, 1, 450);
-    this.lightB = new THREE.AmbientLight(0xAA00FF, 1, 450);
-    this.lightC = new THREE.PointLight(0x0022FF, 1, 450);
+    this.lightA = new THREE.PointLight(0xaa0000, 0.65, 15);
+    this.lightB = new THREE.AmbientLight(0xaaaaaa, 0.75, 15);
+    this.lightC = new THREE.PointLight(0x0000FF, 0.65, 15);
     this.quickvr.scene.add(this.lightA);
     this.quickvr.scene.add(this.lightB);
     this.quickvr.scene.add(this.lightC);
@@ -63,22 +60,27 @@ export default class Render {
     const y = 0.0 + Math.random() * 255;
     const z = 0.0 + Math.random() * 255;
     return new THREE.Vector3(x, y, z);
-  }
-
+  };
 
   createScene = () => {
     const texloader = new THREE.TextureLoader();
     const texture = texloader.load(metal);
-    // const bumptexture = texloader.load(bump);
     texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
     texture.offset.set(0, 0);
-    texture.repeat.set(125, 5);
+    texture.repeat.set(900, 5);
 
-    this.tunnelMaterial = new THREE.MeshPhongMaterial({
+    this.tunnelMaterial = new THREE.MeshLambertMaterial({
       map: texture,
-      transparent: true,
       side: THREE.DoubleSide,
-      // bumpMap: bumptexture
+    });
+
+    const tubetexture = texloader.load(tbs);
+    tubetexture.wrapS = tubetexture.wrapT = THREE.RepeatWrapping;
+    tubetexture.offset.set(0, 0.5);
+    tubetexture.repeat.set(2200, 0.5);
+
+    this.tubeMaterial = new THREE.MeshPhongMaterial({
+      map: tubetexture
     });
 
     const initialPoints = [
@@ -90,7 +92,7 @@ export default class Render {
       [1200.0, 600.0, 1200.0],
       [1200.0, 0.0, 1200.0],
       [0.0, 0.0, 1200.0],
-      [0.0, 0.0, 600.0]
+      [0.0, 0.0, 600.0],
     ];
 
     const points = initialPoints.map((point) => {
@@ -103,9 +105,9 @@ export default class Render {
     const tube1 = new THREE.Mesh(
       new THREE.TubeGeometry(
         this.path1,
-        160,
-        10,
-        16,
+        120,
+        2.15,
+        12,
         true
       ),
       this.tunnelMaterial,
@@ -113,23 +115,42 @@ export default class Render {
 
     this.quickvr.scene.add(tube1);
 
+    // for (let i = 0; i < 12; i++) {
+    //   const tube = this.makeTube(initialPoints);
+    //   this.quickvr.scene.add(tube);
+    // }
+
     setTimeout(() => {
       this.allowChange = true;
     }, this.timeout);
     this.renderLoop();
   };
   
+  makeTube = (points) => {
+    const size = (0.2 + Math.random()) * 0.085;
+    return new THREE.Mesh(
+      new THREE.TubeGeometry(
+        new THREE.CatmullRomCurve3(this.makeRandomPath(points)),
+        120,
+        size,
+        12,
+        false
+      ),
+      this.tubeMaterial,
+    );
+  };
+
   makeRandomPath = (pointList) => {
     this.pointsIndex = [];
     // const totalItems = pointList.length;
     const randomPoints = pointList.map((point, index) => {
-      const check = index < 1 && index > 3;
-      const rx = 25 - Math.random() * 50;
-      const ry = 25 - Math.random() * 50;
-
+      // const check = index < 1 && index > 3;
+      const rx = (1.0 - (Math.random() * 2) ) * 0.95;
+      const ry = (1.0 - (Math.random() * 2) ) * 0.95;
+      const rz = (1.0 - (Math.random() * 2) ) * 0.95;
       const tx = point[0] + rx;
-      const ty = check ? point[1] + ry : point[1];
-      const tz = check ? point[2] : point[2] + ry;
+      const ty = point[1] + ry;
+      const tz = point[2] + rz;
       const v3Point = new THREE.Vector3(tx, ty, tz);
       this.pointsIndex.push(v3Point);
       return v3Point;
@@ -138,19 +159,19 @@ export default class Render {
   };
 
   renderScene = () => {
-    this.stopFrame += 0.00006;
+    this.stopFrame += 0.000001;
     // Get the point at the specific percentage
     const p1 = this.path1.getPointAt(Math.abs((this.stopFrame) % 1));
     const p2 = this.path1.getPointAt(Math.abs((this.stopFrame) % 1));
     const p3 = this.path1.getPointAt(Math.abs((this.stopFrame + 0.03) % 1));
     const p4 = this.path1.getPointAt(Math.abs((this.stopFrame - 0.03) % 1));
 
-    const amps = 5; // + Math.sin(realTime * Math.PI / 180) * 45;
-    const tempX = amps * Math.sin(this.frames * Math.PI / 180) * 0.45;
-    const tempY = amps * Math.cos(this.frames * Math.PI / 180) * 0.45;
-    this.lightA.position.set(p2.x, p2.y, p2.z);
-    this.lightB.position.set(p3.x, p3.y, p3.z + amps);
-    this.lightC.position.set(p4.x, p4.y, p4.z);
+    const amps = 0.75;
+    const tempX = amps * Math.sin(this.stopFrame * Math.PI / 180) * 0.45;
+    const tempY = amps * Math.cos(this.stopFrame * Math.PI / 180) * 0.45;
+    this.lightA.position.set(p3.x + tempX, p3.y, p3.z);
+    this.lightB.position.set(p1.x + tempX, p1.y + tempY, p1.z + tempY);
+    this.lightC.position.set(p4.x, p4.y + tempY, p4.z);
     // Camera
     this.quickvr.camera.position.set(p1.x + tempX, p1.y + tempY, p1.z + tempY);
 

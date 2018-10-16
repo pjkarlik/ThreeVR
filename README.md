@@ -45,12 +45,12 @@ window.onload = () => {
   Visual interface using [dat.guiVR](https://github.com/dataarts/dat.guiVR), the VR version of the original 2D customizable configuration panel.
 
 ## Run the example
-  Requires Node v7.0.0 or greater
+  Requires Node v8.9.4 or greater
 
 
 ```bash
 $ yarn install
-$ yarn dev & open http://localhost:2020
+$ yarn dev & open http://localhost:2030
 ```
 
 ## License

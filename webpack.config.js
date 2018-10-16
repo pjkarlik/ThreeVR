@@ -6,7 +6,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-const DEV_PORT = 2020;
+const DEV_PORT = 2030;
 const { name, version, description, repository } = pkgInfo;
 const { url } = repository;
 

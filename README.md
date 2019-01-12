@@ -2,9 +2,7 @@
 
 ![ThreeVR](./splash.png)
 
-![babel](https://img.shields.io/badge/three--quickvr-1.2.0-green.svg?style=flat-square)
-![webpack](https://img.shields.io/badge/webpack-3.6.0-51b1c5.svg?style=flat-square)
-![threejs](https://img.shields.io/badge/threejs-0.96.0-c55197.svg?style=flat-square)
+![version](https://img.shields.io/badge/version-0.2.0-e05d44.svg?style=flat-square) ![quickvr](https://img.shields.io/badge/three--quickvr-1.2.0-green.svg?style=flat-square) ![threejs](https://img.shields.io/badge/threejs-0.100.0-e09844.svg?style=flat-square) ![webpack](https://img.shields.io/badge/webpack-4.12.1-51b1c5.svg?style=flat-square)  ![WebGL](https://img.shields.io/badge/webgl-GLSL-blue.svg?style=flat-square)
 
 # ThreeVR WebVR Experiments and UI tests
 

@@ -2,7 +2,7 @@
 const fs = require('fs');
 const path = require('path');
 const pkgInfo = require('./package.json');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
@@ -15,6 +15,7 @@ fs.writeFileSync('version.json', JSON.stringify({ name, version, description, ur
 const config = {
   name: 'ThreeVR',
   target: 'web',
+  mode: 'development',
   devServer: {
     disableHostCheck: true,
     host: '0.0.0.0',
@@ -58,17 +59,6 @@ const config = {
         ]
       },
       {
-        test: /\.(wav|mp3)$/,
-        use: [
-          {
-            loader: 'file-loader',
-            options: {
-              name: 'sound/[name]__[hash:base64:5].[ext]'
-            }
-          }
-        ]
-      },
-      {
         test: /\.(png|gif|cur|jpg)$/,
         use: [
           {
@@ -77,32 +67,20 @@ const config = {
               name: 'images/[name]__[hash:base64:5].[ext]'
             }
           },
-          // {
-          //   loader: 'image-webpack-loader',
-          //   options: {
-          //     bypassOnDebug: true,
-          //     optipng: {
-          //       optimizationLevel: 7
-          //     },
-          //     gifsicle: {
-          //       interlaced: false
-          //     }
-          //   }
-          // }
+          {
+            loader: 'image-webpack-loader',
+            options: {
+              bypassOnDebug: true,
+              optipng: {
+                optimizationLevel: 7
+              },
+              gifsicle: {
+                interlaced: false
+              }
+            }
+          }
         ]
       },
-      // Font loading if required
-      // {
-      //   test: /\.(woff2|woff|eot|ttf|svg)$/,
-      //   use: [
-      //     {
-      //       loader: 'file-loader',
-      //       options: {
-      //         name: 'fonts/[name]_[hash:base64:5].[ext]'
-      //       }
-      //     }
-      //   ]
-      // },
       {
         test: /\.js$/,
         enforce: 'pre',
@@ -118,8 +96,8 @@ const config = {
     ]
   },
   plugins: [
-    new ExtractTextPlugin({
-      filename: 'style/[name].[contenthash].css',
+    new MiniCssExtractPlugin({
+      filename: '[name].[contenthash].css',
       allChunks: true
     }),
     new CopyWebpackPlugin([

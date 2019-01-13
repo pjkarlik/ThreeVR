@@ -132,7 +132,7 @@ export default class Render {
     this.quickvr.scene.add(this.sun);
 
     this.makeGround();
-    this.makeTrees(135);
+    this.makeTrees(35);
   };
 
   makeGround = () => {

@@ -1,5 +1,5 @@
 // 
-import Render from './Cartridge/';
+import Render from './Cartridge/tree.js';
 // import Render from './archive/Tunnel/octa.js';
 import { description, version } from '../version.json';
 

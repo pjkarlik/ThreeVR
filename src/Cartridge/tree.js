@@ -14,13 +14,14 @@ import zneg from '../../resources/images/sky/negz.jpg';
 export default class Render {
   constructor() {
     this.generator = new Generator(10);
-    this.amount = 20;
+    this.amount = 25;
     this.size = 50;
     this.strength = 1.25;
-    this.iteration = 0.35;
+    this.iteration = 0.25;
     this.spacing = this.size / this.amount;
     this.treeSet = [];
     this.frames = 0;
+    this.background = 0xEEEEEE;
     this.clock = new THREE.Clock();
     this.quickvr = new QuickVR();
     this.controller = null;
@@ -76,21 +77,16 @@ export default class Render {
 
   init = () => {
     this.quickvr.render.antialias = true;
-    this.quickvr.scene.background = new THREE.Color(0x999999);
-    this.quickvr.scene.fog = new THREE.FogExp2(0xababab, 0.175);
+    this.quickvr.scene.background = new THREE.Color(this.background);
+    this.quickvr.scene.fog = new THREE.FogExp2(this.background, 0.1);
 
-    this.controller = this.quickvr.renderer.vr.getController(0);
+    // this.controller = this.quickvr.renderer.vr.getController(0);
     // const urls = [xpos, xneg, ypos, yneg, zpos, zneg];
     // this.skybox = new THREE.CubeTextureLoader().load(urls);
     // this.skybox.format = THREE.RGBFormat;
     // this.quickvr.scene.background = this.skybox;
 
-    // Set Lights //
-    // this.ambient = new THREE.AmbientLight( 0xaaaaaa, 1);
-    // this.ambient.position.set( 0, 20, 0 );
-    // this.quickvr.scene.add( this.ambient );
-
-    this.spotLight = new THREE.SpotLight( 0xffffff, 0.25 );
+    this.spotLight = new THREE.SpotLight( 0xffffff, 0.15 );
     this.spotLight.position.set( 0, 60, 0 );
     this.spotLight.angle = Math.PI / 3;
     this.spotLight.penumbra = 0.05;
@@ -136,10 +132,7 @@ export default class Render {
     this.quickvr.scene.add(this.sun);
 
     this.makeGround();
-
-    for(let i = 0; i < 20; i ++) {
-      this.makeTree();
-    }
+    this.makeTrees(135);
   };
 
   makeGround = () => {
@@ -172,7 +165,7 @@ export default class Render {
         const noiseX = this.generator.simplex3(
           x * this.iteration,
           y * this.iteration,
-          (this.frames * 0.1),
+          this.frames,
         );
         // vertices[vy + vx + 0] = (-offset) + x * this.spacing;
         // vertices[vy + vx + 1] = ((-offset) + y * this.spacing);
@@ -183,50 +176,98 @@ export default class Render {
     this.geometry.computeVertexNormals();
   };
 
-  makeTree = () => {
-    const position = {
-      x: 20 - (Math.random() * 40),
-      y: 20 - (Math.random() * 40),
+  getRandomPostion = () => {
+    const spatial = this.size * 0.85;
+    return {
+      x: (spatial / 2) - (Math.random() * spatial),
+      y: (spatial / 2) - (Math.random() * spatial),
       z: 0
     };
+    
+  };
 
-    const tree_material = new THREE.MeshPhongMaterial({ 
-      color: 0x00aa33,
-      dithering: true,
-      flatShading: true
-    });
-    const base_material = new THREE.MeshPhongMaterial({ 
-      color: 0x5d2700,
-      dithering: true,
-      flatShading: true
-    });
+  checkPosition = (position, radius) => {
+    if (this.treeSet.length < 0 ) return true;
 
-    const height = 4.25 + Math.random() * 7.5;
-    const radius = 1.5 + Math.random() * 1.25;
-    const treeObject = new THREE.Object3D();
-    const tree_geometry = new THREE.ConeBufferGeometry(radius, height, 5);
-    const base_geometry = new THREE.CylinderGeometry( radius / 4, radius / 4, 3, 6 );
+    for (let i = 0; i < this.treeSet.length; i++) {
+      let tree = this.treeSet[i].pos;
+      let rds = (this.treeSet[i].radius * 2);
 
-    const tree = new THREE.Mesh( tree_geometry, tree_material );
-    const base = new THREE.Mesh( base_geometry, base_material );
+      let xf = position.x < (tree.x + rds) && position.x > (tree.x - rds);
 
-    tree.position.set( position.x, position.z + (height/2.15) + 1, position.y );
-    tree.receiveShadow = true;
-    tree.castShadow = true;
- 
-    base.position.set( position.x, position.z, position.y );
-    base.receiveShadow = true;
-    base.castShadow = true;
+      let yf = position.y < (tree.y + rds) && position.y > (tree.y - rds);
 
-    treeObject.add(tree);
-    treeObject.add(base);
+      // console.log(position.x, tree.x, xf);
+      // console.log(position.y, tree.y, yf);
+      // console.log('-----------------');
+      if(xf && yf) { 
+        console.log('false');
+        return false;
+      } 
+    }
+    return true;
+  };
 
-    this.quickvr.scene.add(treeObject);
-    this.treeSet.push({
-      id: this.treeSet.length,
-      tree: treeObject,
-      position
-    });
+  makeTrees = (amount) => {
+    for(let i = 0; i < amount; i ++) {
+      let position;
+      let check = false;
+      const height = 2.5 + Math.random() * 4.5;
+      const radius = 0.5 + Math.random() * 1.0;
+
+      while(!check) {
+        position = this.getRandomPostion();
+        check = this.checkPosition(position, radius);
+      }
+
+      const tree_material = new THREE.MeshPhongMaterial({ 
+        color: 0x00aa33,
+        dithering: true,
+        flatShading: true
+      });
+      const base_material = new THREE.MeshPhongMaterial({ 
+        color: 0x5d2700,
+        dithering: true,
+        flatShading: true
+      });
+
+      const treeObject = new THREE.Object3D();
+      const tree_geometry = new THREE.ConeBufferGeometry(radius, height, 5);
+      const base_geometry = new THREE.CylinderGeometry( radius / 4, radius / 4, 3, 6 );
+
+      const tree = new THREE.Mesh( tree_geometry, tree_material );
+      const base = new THREE.Mesh( base_geometry, base_material );
+
+      tree.position.set(0, (height/2.15) + 1, 0);
+      tree.receiveShadow = true;
+      tree.castShadow = true;
+  
+      base.position.set(0, 0, 0);
+      base.receiveShadow = true;
+      base.castShadow = true;
+
+      treeObject.add(tree);
+      treeObject.add(base);
+
+      const noiseX = this.generator.simplex3(
+        Math.abs(position.x / this.size) * this.iteration,
+        Math.abs(position.y / this.size) * this.iteration,
+        this.frames,
+      );
+
+      treeObject.position.set( position.x, (noiseX * this.strength), position.y );
+
+      this.quickvr.scene.add(treeObject);
+      this.treeSet.push({
+        pos: {
+          x: position.x,
+          y: position.y,
+          z: (noiseX * this.strength) 
+        },
+        radius: radius,
+        tree: base
+      });
+    }
   };
 
   moveLight = () => {

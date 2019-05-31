@@ -1,6 +1,6 @@
 // 
-import Render from './Cartridge/tree.js';
-// import Render from './archive/Tunnel/octa.js';
+import Render from './Cartridge/gaze.js';
+// import Render from './archive/Tunnel/index.js';
 import { description, version } from '../version.json';
 
 require('../resources/styles/styles.css');

@@ -78,7 +78,7 @@ export default class Render {
   init = () => {
     this.quickvr.render.antialias = true;
     this.quickvr.scene.background = new THREE.Color(this.background);
-    this.quickvr.scene.fog = new THREE.FogExp2(this.background, 0.1);
+    this.quickvr.scene.fog = new THREE.FogExp2(this.background, 0.09);
 
     // this.controller = this.quickvr.renderer.vr.getController(0);
     // const urls = [xpos, xneg, ypos, yneg, zpos, zneg];
@@ -212,8 +212,8 @@ export default class Render {
     for(let i = 0; i < amount; i ++) {
       let position;
       let check = false;
-      const height = 2.5 + Math.random() * 4.5;
-      const radius = 0.5 + Math.random() * 1.0;
+      const height = 2.5 + Math.random() * 3.5;
+      const radius = 0.5 + Math.random() * 1.5;
 
       while(!check) {
         position = this.getRandomPostion();
@@ -232,13 +232,13 @@ export default class Render {
       });
 
       const treeObject = new THREE.Object3D();
-      const tree_geometry = new THREE.ConeBufferGeometry(radius, height, 5);
+      const tree_geometry = new THREE.ConeBufferGeometry(radius, height, 8);
       const base_geometry = new THREE.CylinderGeometry( radius / 4, radius / 4, 3, 6 );
 
       const tree = new THREE.Mesh( tree_geometry, tree_material );
       const base = new THREE.Mesh( base_geometry, base_material );
 
-      tree.position.set(0, (height/2.15) + 1, 0);
+      tree.position.set(0, (height/3.25) + 1, 0);
       tree.receiveShadow = true;
       tree.castShadow = true;
   

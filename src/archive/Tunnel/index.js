@@ -1,9 +1,9 @@
 import QuickVR from 'three-quickvr';
 import THREE from '../../Three';
 import { Generator } from '../../utils/simplexGenerator';
-import metal from '../../../resources/images/matallo.jpg';
-import tbs from '../../../resources/images/int1.jpg';
 
+import stone from '../../../resources/images/6920.jpg';
+import bmp from '../../../resources/images/6920-bmp.jpg';
 // Render Class Object //
 export default class Render {
   constructor() {
@@ -46,9 +46,14 @@ export default class Render {
     this.quickvr.scene.background = new THREE.Color(this.background);
     this.quickvr.scene.fog = new THREE.FogExp2(new THREE.Color(0x000000), 0.0145);
     // Set Light //
-    this.lightA = new THREE.PointLight(0xaa0000, 0.65, 15);
-    this.lightB = new THREE.AmbientLight(0xaaaaaa, 0.75, 15);
-    this.lightC = new THREE.PointLight(0x0000FF, 0.65, 15);
+    this.lightA = new THREE.PointLight(0xaa0000, 0.95, 15);
+    this.lightB = new THREE.AmbientLight(0xaaaaaa, 1, 150);
+    // this.lightC = new THREE.PointLight(0x0000FF, 0.65, 15);
+
+    // this.lightA = new THREE.PointLight(0x888888, 1, 550);
+    // this.lightB = new THREE.PointLight(0x999999, 1, 350);
+    this.lightC = new THREE.PointLight(0xFF0000, 1, 350);
+
     this.quickvr.scene.add(this.lightA);
     this.quickvr.scene.add(this.lightB);
     this.quickvr.scene.add(this.lightC);
@@ -64,25 +69,27 @@ export default class Render {
 
   createScene = () => {
     const texloader = new THREE.TextureLoader();
-    const texture = texloader.load(metal);
-    texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
-    texture.offset.set(0, 0);
-    texture.repeat.set(900, 5);
+    /* eslint no-multi-assign: 0 */
+    const rpt = 250;
+    const texture = texloader.load(stone, () => {
+      texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+      texture.offset.set(0, 0);
+      texture.repeat.set(rpt, 5);
+    });
+    const bmpMap = texloader.load(bmp, () => {
+      bmpMap.wrapS = bmpMap.wrapT = THREE.RepeatWrapping;
+      bmpMap.offset.set(0, 0);
+      bmpMap.repeat.set(rpt, 5);
+    });
 
-    this.tunnelMaterial = new THREE.MeshLambertMaterial({
+    this.tunnelMaterial = new THREE.MeshPhongMaterial({
       map: texture,
+      bumpMap: bmpMap,
+      bumpScale: 1,
+      specularMap: bmpMap,
+      specular: new THREE.Color(0x33ff44),
       side: THREE.DoubleSide,
     });
-
-    const tubetexture = texloader.load(tbs);
-    tubetexture.wrapS = tubetexture.wrapT = THREE.RepeatWrapping;
-    tubetexture.offset.set(0, 0.5);
-    tubetexture.repeat.set(2200, 0.5);
-
-    this.tubeMaterial = new THREE.MeshPhongMaterial({
-      map: tubetexture
-    });
-
     const initialPoints = [
       [0.0, 0.0, 600.0],
       [0.0, 0.0, 0.0],
@@ -103,22 +110,11 @@ export default class Render {
     this.path1 = new THREE.CatmullRomCurve3(points);
 
     const tube1 = new THREE.Mesh(
-      new THREE.TubeGeometry(
-        this.path1,
-        120,
-        2.15,
-        12,
-        true
-      ),
+      new THREE.TubeGeometry(this.path1, 100, 15, 15, true),
       this.tunnelMaterial,
     );
 
     this.quickvr.scene.add(tube1);
-
-    // for (let i = 0; i < 12; i++) {
-    //   const tube = this.makeTube(initialPoints);
-    //   this.quickvr.scene.add(tube);
-    // }
 
     setTimeout(() => {
       this.allowChange = true;
@@ -159,12 +155,12 @@ export default class Render {
   };
 
   renderScene = () => {
-    this.stopFrame += 0.000001;
+    this.stopFrame += 0.000003;
     // Get the point at the specific percentage
     const p1 = this.path1.getPointAt(Math.abs((this.stopFrame) % 1));
-    const p2 = this.path1.getPointAt(Math.abs((this.stopFrame) % 1));
-    const p3 = this.path1.getPointAt(Math.abs((this.stopFrame + 0.03) % 1));
-    const p4 = this.path1.getPointAt(Math.abs((this.stopFrame - 0.03) % 1));
+    // const p2 = this.path1.getPointAt(Math.abs((this.stopFrame) % 1));
+    const p3 = this.path1.getPointAt(Math.abs((this.stopFrame + 0.05) % 1));
+    const p4 = this.path1.getPointAt(Math.abs((this.stopFrame - 0.05) % 1));
 
     const amps = 0.75;
     const tempX = amps * Math.sin(this.stopFrame * Math.PI / 180) * 0.45;

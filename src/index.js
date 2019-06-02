@@ -1,5 +1,5 @@
 // 
-import Render from './Cartridge/gaze.js';
+import Render from './Cartridge/index.js';
 // import Render from './archive/Tunnel/index.js';
 import { description, version } from '../version.json';
 

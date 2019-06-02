@@ -52,8 +52,11 @@ export default class Render {
 
   vrController = (event) => {
     this.controller = event.detail;
+
     this.controller.standingMatrix = this.quickvr.renderer.vr.getStandingMatrix();
     this.controller.head = this.quickvr.camera;
+    this.quickvr.controls.standingMatrix = this.quickvr.renderer.vr.getStandingMatrix();
+
     const material = new THREE.MeshPhongMaterial({
       flatShading: true,
       color: 0xDB3236
@@ -66,7 +69,7 @@ export default class Render {
       new THREE.BoxGeometry( 0.03, 0.1, 0.03 ),
       material,
     );
-  
+
     mesh.rotation.x = -Math.PI / 2;
     handle.position.y = -0.05;
     mesh.add(handle);
@@ -75,7 +78,6 @@ export default class Render {
 
     this.controller.userData.mesh = mesh;
     this.controller.add(mesh);
-
     this.quickvr.scene.add(this.controller);
     this.guiInputHelper = window.dat.GUIVR.addInputObject(this.controller);
     this.quickvr.scene.add(this.guiInputHelper);

@@ -55,7 +55,7 @@ export default class Particle {
 
     this.vy -= gravity;
 
-    this.size -= (this.life * 0.00005);
+    this.size -= (this.life * 0.000001);
     this.life++;
   }
 }

@@ -136,7 +136,9 @@ export default class Render {
   };
 
   makeGround = () => {
-    this.geometry = new THREE.PlaneBufferGeometry(this.size, this.size, this.amount, this.amount);
+    this.geometry = new THREE.PlaneBufferGeometry(
+      this.size, this.size, 12, 12
+    );
 
     const mesh = new THREE.Mesh( 
       this.geometry, 
@@ -213,7 +215,7 @@ export default class Render {
       let position;
       let check = false;
       const height = 2.5 + Math.random() * 3.5;
-      const radius = 0.5 + Math.random() * 1.5;
+      const radius = 0.2 + Math.random() * 1.2;
 
       while(!check) {
         position = this.getRandomPostion();

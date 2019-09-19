@@ -45,10 +45,24 @@ export default class Render {
     this.renderLoop();
   }
 
+  resetDepth = () => {
+    for(let i = 0; i < this.amount; i++) {
+      this.quickvr.scene.remove(this.splineObject[i]);
+    }
+    this.amount = Math.round(5 + Math.abs(Math.random() * 26));
+    this.adef = 360 / this.amount + 1;
+    this.splineObject = [];
+
+    this.createScene();
+    this.renderLoop();
+  };
+
   vrController = (event) => {
+
     this.controller = event.detail;
     this.controller.standingMatrix = this.quickvr.renderer.vr.getStandingMatrix();
     this.controller.head = this.quickvr.camera;
+
     const material = new THREE.MeshPhongMaterial({
       flatShading: true,
       color: 0xDB3236
@@ -61,7 +75,7 @@ export default class Render {
       new THREE.BoxGeometry( 0.03, 0.1, 0.03 ),
       material,
     );
-  
+
     mesh.rotation.x = -Math.PI / 2;
     handle.position.y = -0.05;
     mesh.add(handle);
@@ -70,7 +84,6 @@ export default class Render {
 
     this.controller.userData.mesh = mesh;
     this.controller.add(mesh);
-
     this.quickvr.scene.add(this.controller);
     this.guiInputHelper = window.dat.GUIVR.addInputObject(this.controller);
     this.quickvr.scene.add(this.guiInputHelper);
@@ -90,7 +103,8 @@ export default class Render {
       speed: this.speed,
       x: this.emitter.x,
       y: this.emitter.z,
-      z: this.emitter.y
+      z: this.emitter.y,
+      reset: this.resetDepth
     };
 
     const guiVR = window.dat.GUIVR;
@@ -109,20 +123,22 @@ export default class Render {
     displayOptions.add(options, 'z', -1.5, 3.5).step(0.001).onChange((val) => {
       this.emitter.y = val;
     });
-    displayOptions.add(options, 'speed', 0, 5).step(0.001).onChange((val) => {
+    displayOptions.add(options, 'speed', -5, 5).step(0.001).onChange((val) => {
       this.speed = val;
     });
-
+    displayOptions.add(options, 'reset');
     displayOptions.position.set(-0.5,2.35,-2.15);
     displayOptions.rotation.x = Math.PI/16;
     this.quickvr.scene.add(displayOptions);
   };
 
   init = () => {
+    this.controller = this.quickvr.renderer.vr.getController(0);
+    this.quickvr.controls.standingMatrix = this.quickvr.renderer.vr.getStandingMatrix();
+
     this.quickvr.render.antialias = true;
     this.quickvr.scene.fog = new THREE.FogExp2(0x000000, 0.375);
 
-    this.controller = this.quickvr.renderer.vr.getController(0);
     const urls = [xpos, xneg, ypos, yneg, zpos, zneg];
     this.skybox = new THREE.CubeTextureLoader().load(urls);
     this.skybox.format = THREE.RGBFormat;
@@ -203,7 +219,7 @@ export default class Render {
 
   checkObjects = () => {
     this.frames += this.speed;
-
+    // const control = this.controller.getAxes(0);
     for(let i = 0; i < this.amount; i++) {
       const tempSpline = this.splineObject[i];
       const evenItem = (i % 2 === 0);
@@ -215,6 +231,7 @@ export default class Render {
       );
       tempSpline.position.set(this.emitter.x, this.emitter.y, this.emitter.z);
     }
+    
   };
 
   renderLoop = () => {

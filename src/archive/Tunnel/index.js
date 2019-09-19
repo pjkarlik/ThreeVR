@@ -70,16 +70,16 @@ export default class Render {
   createScene = () => {
     const texloader = new THREE.TextureLoader();
     /* eslint no-multi-assign: 0 */
-    const rpt = 250;
+    const rpt = 400;
     const texture = texloader.load(stone, () => {
       texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
       texture.offset.set(0, 0);
-      texture.repeat.set(rpt, 5);
+      texture.repeat.set(rpt, 6);
     });
     const bmpMap = texloader.load(bmp, () => {
       bmpMap.wrapS = bmpMap.wrapT = THREE.RepeatWrapping;
       bmpMap.offset.set(0, 0);
-      bmpMap.repeat.set(rpt, 5);
+      bmpMap.repeat.set(rpt, 6);
     });
 
     this.tunnelMaterial = new THREE.MeshPhongMaterial({
@@ -110,7 +110,7 @@ export default class Render {
     this.path1 = new THREE.CatmullRomCurve3(points);
 
     const tube1 = new THREE.Mesh(
-      new THREE.TubeGeometry(this.path1, 100, 15, 15, true),
+      new THREE.TubeGeometry(this.path1, 20, 8, 8, true),
       this.tunnelMaterial,
     );
 
@@ -127,9 +127,9 @@ export default class Render {
     return new THREE.Mesh(
       new THREE.TubeGeometry(
         new THREE.CatmullRomCurve3(this.makeRandomPath(points)),
-        120,
+        100,
         size,
-        12,
+        8,
         false
       ),
       this.tubeMaterial,

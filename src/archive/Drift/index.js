@@ -15,7 +15,7 @@ export default class Render {
   constructor() {
     this.frames = 360;
     this.size = 3.5;
-    this.speed = 3.0;
+    this.speed = 1.5;
 
     this.quickvr = new QuickVR();
     this.controller = null;
@@ -25,19 +25,19 @@ export default class Render {
     this.particleColor = 360;
     this.background = 0xAAAAAA;
     this.camPosition = {
-      x: -1546.7881,
-      y: -93.118,
-      z: -341.03976
+      x: -1000,
+      y: -90,
+      z: -300
     };
     this.trsPosition = {
-      x: -1546.7881,
-      y: -93.118,
-      z: -341.03976
+      x: -1000,
+      y: -90,
+      z: -300
     };
     this.emitter = {
       x: 0,
       y: 0,
-      z: -1200
+      z: -900
     };
     this.box = {
       top: 4000,
@@ -61,9 +61,9 @@ export default class Render {
       },
       3000 + Math.random() * 2000
     );
-    window.addEventListener( 'vr controller connected', (e) => {
-      // this.vrController(e);
-    }, false);
+    // window.addEventListener( 'vr controller connected', (e) => {
+    //   this.vrController(e);
+    // }, false);
   
     this.bootstrap();
     this.createStage();
@@ -71,14 +71,15 @@ export default class Render {
   }
 
   vrController = (event) => {
-    const { camera, scene }  = this.quickvr;
     this.controller = event.detail;
+
     this.controller.standingMatrix = this.quickvr.renderer.vr.getStandingMatrix();
-    this.controller.head = camera;
+    this.controller.head = this.quickvr.camera;
+    this.quickvr.controls.standingMatrix = this.quickvr.renderer.vr.getStandingMatrix();
+
     const material = new THREE.MeshPhongMaterial({
       flatShading: true,
-      color: 0xDB3236,
-      dithering: true 
+      color: 0xDB3236
     });
     const mesh = new THREE.Mesh(
       new THREE.CylinderGeometry( 0.005, 0.05, 0.1, 6 ),
@@ -88,20 +89,18 @@ export default class Render {
       new THREE.BoxGeometry( 0.03, 0.1, 0.03 ),
       material,
     );
-  
+
     mesh.rotation.x = -Math.PI / 2;
     handle.position.y = -0.05;
-    
-    handle.castShadow = true;
     mesh.add(handle);
-    
-    mesh.castShadow = true;
+    mesh.castShadows = true;
+    mesh.receiveShadows = true;
+
     this.controller.userData.mesh = mesh;
     this.controller.add(mesh);
-
-    scene.add(this.controller);
+    this.quickvr.scene.add(this.controller);
     this.guiInputHelper = window.dat.GUIVR.addInputObject(this.controller);
-    scene.add(this.guiInputHelper);
+    this.quickvr.scene.add(this.guiInputHelper);
 
     this.controller.addEventListener( 'primary press began', (event) => {
       event.target.userData.mesh.material.color.setHex(0x3642DB );
@@ -136,8 +135,8 @@ export default class Render {
 
   hitRnd = () => {
     const { x, y, z } = this.emitter;
-    const type = Math.random() * 100 > 94;
-    const size = Math.random() * 100 > 54 ? 6 : 1;
+    const type = Math.random() * 100 > 97;
+    const size = Math.random() * 100 > 84 ? 6 : 1;
     const amps = type ? 80 : 40 + Math.abs(60 * Math.cos((this.frames * 0.25 ) * Math.PI / 180));
     this.frames++;
     const sVar = amps * Math.sin(this.frames * 2.0 * Math.PI / 180);
@@ -250,12 +249,9 @@ export default class Render {
   renderLoop = () => {
     this.checkParticles();
     // THREE.VRController.update();
-    this.cameraLoop();
-    if(Math.random() * 255 > 252){
-      this.speed = 3.0 + Math.random() * 3;
-    }
+    // this.cameraLoop();
     
-    if(this.frames % 6 === 0 && this.particles.length < 500) {
+    if(this.frames % 16 === 0 && this.particles.length < 500) {
       this.hitRnd();
     }
 

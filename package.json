@@ -43,7 +43,7 @@
     "less-loader": "^4.1.0",
     "mini-css-extract-plugin": "^0.7.0",
     "style-loader": "~0.23.1",
-    "three": "^0.105.1",
+    "three": "^0.137.0",
     "three-quickvr": "^1.2.0",
     "url-loader": "^0.5.7",
     "webpack": "^4.32.2",

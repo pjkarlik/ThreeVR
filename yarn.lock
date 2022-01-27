@@ -7750,10 +7750,10 @@ three-vreffect-module@^2.2.0:
   resolved "https://registry.yarnpkg.com/three-vreffect-module/-/three-vreffect-module-2.2.0.tgz#ebe86d59ba74a30e4c9a05586ffbceb8d902a0d5"
   integrity sha512-MczA/QTkJrXUbscWbjgozy0EV5t/tUC9glWC+RiB65XzSEpf/5ikE1AQs9CWXINoyP1bOLiinXlEnfZJauQy4A==
 
-three@^0.105.1:
-  version "0.105.1"
-  resolved "https://registry.yarnpkg.com/three/-/three-0.105.1.tgz#323fc31e19b25eec408a84f8401ea6dbe42a32bb"
-  integrity sha512-Oa6dfF3qsgS/mmeNB+nKgcQBq71Ucxv8TdmVS+lNjLzG/GAIgvrTDTKmtvxXd7tXDv7RXmEprcmzO3JiT0UDsA==
+three@^0.137.0:
+  version "0.137.0"
+  resolved "https://registry.yarnpkg.com/three/-/three-0.137.0.tgz#0ebd6ba66637a332c31f234bcdd35aeec071a6e3"
+  integrity sha512-rzSDhia6cU35UCy6y+zEEws6vSgytfHqFMSaBvUcySgzwvDO6vETyswtSNi/+aVqJw8WLMwyT1mlQQ1T/dxxOA==
 
 through2@^2.0.0:
   version "2.0.5"
